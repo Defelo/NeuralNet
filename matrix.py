@@ -33,33 +33,33 @@ class Matrix:
         return out + "\n])"
 
     def __add__(self, other):
-        assert isinstance(other, Matrix)
-        assert self.rows() == other.rows() and self.cols() == other.cols()
+        if isinstance(other, Matrix):
+            assert self.rows() == other.rows() and self.cols() == other.cols()
         return Matrix([
             [
-                self[row, col] + other[row, col]
+                self[row, col] + (other[row, col] if isinstance(other, Matrix) else other)
                 for col in range(self.cols())
             ]
             for row in range(self.rows())
         ])
 
     def __sub__(self, other):
-        assert isinstance(other, Matrix)
-        assert self.rows() == other.rows() and self.cols() == other.cols()
+        if isinstance(other, Matrix):
+            assert self.rows() == other.rows() and self.cols() == other.cols()
         return Matrix([
             [
-                self[row, col] - other[row, col]
+                self[row, col] - (other[row, col] if isinstance(other, Matrix) else other)
                 for col in range(self.cols())
             ]
             for row in range(self.rows())
         ])
 
     def __mul__(self, other):
-        assert isinstance(other, Matrix)
-        assert self.rows() == other.rows() and self.cols() == other.cols()
+        if isinstance(other, Matrix):
+            assert self.rows() == other.rows() and self.cols() == other.cols()
         return Matrix([
             [
-                self[row, col] * other[row, col]
+                self[row, col] * (other[row, col] if isinstance(other, Matrix) else other)
                 for col in range(self.cols())
             ]
             for row in range(self.rows())
