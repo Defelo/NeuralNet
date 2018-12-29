@@ -17,9 +17,9 @@ class Network:
             assert biases[i].cols() == 1
             self._layer_sizes[i + 1] = weights[i].rows()
 
-    @staticmethod
-    def random_network(layer_sizes: List[int]):
-        return Network([
+    @classmethod
+    def random_network(cls, layer_sizes: List[int]):
+        return cls([
             Matrix.random(layer_sizes[i + 1], layer_sizes[i])
             for i in range(len(layer_sizes) - 1)
         ], [
