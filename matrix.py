@@ -87,3 +87,10 @@ class Matrix:
 
     def transpose(self):
         return Matrix([list(x) for x in zip(*self._matrix)])
+
+    def to_vector(self) -> list:
+        return self.transpose()._matrix[0]
+
+    @staticmethod
+    def from_vector(vector: list):
+        return Matrix([vector]).transpose()
