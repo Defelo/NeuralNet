@@ -1,5 +1,7 @@
 import gzip
 
+from trainingdata import TrainingData
+
 TEST_IMAGES = "data/test_images.gz"
 TEST_LABELS = "data/test_labels.gz"
 TRAIN_IMAGES = "data/train_images.gz"
@@ -18,7 +20,7 @@ def _load(images: str, labels: str):
     for i in range(size):
         label = int.from_bytes(labels.read(1), 'big')
         image = [int.from_bytes(images.read(1), 'big') / 255 for _ in range(rows * cols)]
-        yield image, label
+        yield TrainingData(image, label)
 
 
 def load_train():
