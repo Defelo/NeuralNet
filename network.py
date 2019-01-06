@@ -1,3 +1,4 @@
+import json
 import random as _random
 from typing import List
 
@@ -83,6 +84,23 @@ class Network:
                 print(f"Epoch {epoch + 1}: {self.evaluate(validation_data) * 100}%")
             else:
                 print(f"Epoch {epoch + 1} complete")
+
+    def save_to_file(self, filepath: str):
+        with open(filepath, "w") as f:
+            json.dump({
+                "layer_sizes": self._layer_sizes,
+                "weights": [w.get_matrix() for w in self._weights],
+                "biases": [b.to_vector() for b in self._biases]
+            }, f)
+            f.flush()
+
+    @classmethod
+    def load_file(cls, filepath: str):
+        with open(filepath) as f:
+            data = json.load(f)
+        out = cls(data["weights"], data["biases"])
+        assert out._layer_sizes == data["layer_sizes"], "Invalid layer sizes"
+        return out
 
     @staticmethod
     def activation(x: float) -> float:
