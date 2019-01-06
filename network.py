@@ -33,17 +33,18 @@ class Network:
                    for i in range(len(layer_sizes) - 1)
                ]
 
-    def feedforward(self, input_data: Matrix) -> Matrix:
+    def feedforward(self, input_data):
+        input_data = self.prepare_input(input_data)
         assert input_data.cols() == 1 and input_data.rows() == self._layer_sizes[0]
         for w, b in zip(self._weights, self._biases):
             input_data = (w.dot(input_data) + b).apply_function(self.activation)
-        return input_data
+        return self.interpret_output(input_data)
 
     def backpropagation(self, training_data: TrainingData) -> (List[Matrix], List[Matrix]):
         delta_w = [Matrix.filled_with(w.rows(), w.cols()) for w in self._weights]
         delta_b = [Matrix.filled_with(b.rows(), 1) for b in self._biases]
 
-        layer = training_data.input_data
+        layer = self.prepare_input(training_data.input_data)
         activations = [layer]
         zs = []
 
@@ -55,7 +56,8 @@ class Network:
             activations.append(layer)
 
         # propagate backwards
-        delta = (layer - training_data.expected_output) * zs[-1].apply_function(self.activation_derivative)
+        expected = self.prepare_expected_output(training_data.expected_output)
+        delta = (layer - expected) * zs[-1].apply_function(self.activation_derivative)
         delta_w[-1] = delta.dot(activations[-2].transpose())
         delta_b[-1] = delta
         for l in range(2, len(self._layer_sizes)):
@@ -107,12 +109,22 @@ class Network:
         assert out._layer_sizes == data["layer_sizes"], "Invalid layer sizes"
         return out
 
+    # abstract methods
     @staticmethod
     def activation(x: float) -> float:
         pass
 
     @staticmethod
     def activation_derivative(x: float) -> float:
+        pass
+
+    def prepare_expected_output(self, expected) -> Matrix:
+        pass
+
+    def prepare_input(self, inp) -> Matrix:
+        pass
+
+    def interpret_output(self, out: Matrix):
         pass
 
     def evaluate(self, test_data: List[TrainingData]) -> float:
