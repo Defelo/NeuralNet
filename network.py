@@ -11,22 +11,27 @@ class Network:
         assert len(weights) == len(biases)
         self._weights = weights
         self._biases = biases
-        self._layer_sizes = [weights[0].cols()]
-        for i in range(len(weights)):
-            assert weights[i].rows() == biases[i].rows()
-            assert self._layer_sizes[i] == weights[i].cols()
-            assert biases[i].cols() == 1
-            self._layer_sizes[i + 1] = weights[i].rows()
+        self._layer_sizes = []
 
-    @classmethod
-    def random_network(cls, layer_sizes: List[int]):
-        return cls([
-            Matrix.random(layer_sizes[i + 1], layer_sizes[i])
-            for i in range(len(layer_sizes) - 1)
-        ], [
-            Matrix.random(layer_sizes[i + 1], 1)
-            for i in range(len(layer_sizes) - 1)
-        ])
+        self._update_layer_sizes()
+
+    def _update_layer_sizes(self):
+        self._layer_sizes = [self._weights[0].cols()]
+        for i in range(len(self._weights)):
+            assert self._weights[i].rows() == self._biases[i].rows()
+            assert self._layer_sizes[i] == self._weights[i].cols()
+            assert self._biases[i].cols() == 1
+            self._layer_sizes.append(self._weights[i].rows())
+
+    @staticmethod
+    def random_network(layer_sizes: List[int]) -> (List[Matrix], List[Matrix]):
+        return [
+                   Matrix.random(layer_sizes[i + 1], layer_sizes[i])
+                   for i in range(len(layer_sizes) - 1)
+               ], [
+                   Matrix.random(layer_sizes[i + 1], 1)
+                   for i in range(len(layer_sizes) - 1)
+               ]
 
     def feedforward(self, input_data: Matrix) -> Matrix:
         assert input_data.cols() == 1 and input_data.rows() == self._layer_sizes[0]
