@@ -85,6 +85,9 @@ class Matrix:
             for row in range(self.rows())
         ])
 
+    def get_matrix(self) -> List[List[float]]:
+        return self._matrix
+
     def transpose(self):
         return Matrix([list(x) for x in zip(*self._matrix)])
 
