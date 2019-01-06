@@ -81,14 +81,19 @@ class Network:
         self._biases = [b - db * (learn_rate / len(mini_batch)) for b, db in zip(self._biases, delta_b)]
 
     def train(self, training_data: List[TrainingData], epochs: int, mini_batch_size: int, learn_rate: float,
-              validation_data: List[TrainingData] = None):
+              validation_data: List[TrainingData] = None, save_file: str = None):
+        best_accuracy = 0
         for epoch in range(epochs):
             _random.shuffle(training_data)
             for i in range(0, len(training_data), mini_batch_size):
                 mini_batch = training_data[i:i + mini_batch_size]
                 self.update_mini_batch(mini_batch, learn_rate)
             if validation_data:
-                print(f"Epoch {epoch + 1}: {self.evaluate(validation_data) * 100}%")
+                accuracy = self.evaluate(validation_data)
+                if accuracy > best_accuracy:
+                    best_accuracy = accuracy
+                    self.save_to_file(save_file)
+                print(f"Epoch {epoch + 1}: {accuracy}")
             else:
                 print(f"Epoch {epoch + 1} complete")
 

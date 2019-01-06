@@ -41,9 +41,9 @@ class DigitClassifier(Network):
 if __name__ == '__main__':
     network = DigitClassifier()
     print("Loading training data ...")
-    training_data = [x for _, x in zip(range(1000), mnist.load_train())]
+    training_data = [x for _, x in zip(range(2000), mnist.load_train())]
     print("Loading validation data ...")
-    validation_data = training_data  # [x for _, x in zip(range(200), mnist.load_test())]
+    validation_data = [x for _, x in zip(range(1000), mnist.load_test())]
     print("Start training")
-    network.train(training_data, 30, 10, 3, validation_data)
+    network.train(training_data, 30, 10, 3, validation_data, "network.json")
     print(f"Accuracy: {network.evaluate(validation_data)}")
