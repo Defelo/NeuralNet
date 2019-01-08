@@ -8,9 +8,12 @@ from util import sigmoid, sigmoid_prime
 
 
 class DigitClassifier(Network):
-    def __init__(self, *_):
-        weights, biases = self.random_network([28 ** 2, 16, 16, 10])
+    def __init__(self, weights: List[Matrix], biases: List[Matrix]):
         super().__init__(weights, biases)
+
+    @classmethod
+    def random_network(cls, layer_sizes: List[int]):
+        return super().random_network([28 ** 2] + layer_sizes + [10])
 
     @staticmethod
     def activation(x: float) -> float:
@@ -39,7 +42,7 @@ class DigitClassifier(Network):
 
 
 if __name__ == '__main__':
-    network = DigitClassifier()
+    network = DigitClassifier.random_network([10, 10])
     print("Loading training data ...")
     training_data = [x for _, x in zip(range(2000), mnist.load_train())]
     print("Loading validation data ...")

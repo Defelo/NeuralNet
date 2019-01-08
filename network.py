@@ -23,15 +23,15 @@ class Network:
             assert self._biases[i].cols() == 1
             self._layer_sizes.append(self._weights[i].rows())
 
-    @staticmethod
-    def random_network(layer_sizes: List[int]) -> (List[Matrix], List[Matrix]):
-        return [
-                   Matrix.random(layer_sizes[i + 1], layer_sizes[i])
-                   for i in range(len(layer_sizes) - 1)
-               ], [
-                   Matrix.random(layer_sizes[i + 1], 1)
-                   for i in range(len(layer_sizes) - 1)
-               ]
+    @classmethod
+    def random_network(cls, layer_sizes: List[int]):
+        return cls([
+            Matrix.random(layer_sizes[i + 1], layer_sizes[i])
+            for i in range(len(layer_sizes) - 1)
+        ], [
+            Matrix.random(layer_sizes[i + 1], 1)
+            for i in range(len(layer_sizes) - 1)
+        ])
 
     def feedforward(self, input_data):
         input_data = self.prepare_input(input_data)
@@ -83,6 +83,9 @@ class Network:
     def train(self, training_data: List[TrainingData], epochs: int, mini_batch_size: int, learn_rate: float,
               validation_data: List[TrainingData] = None, save_file: str = None):
         best_accuracy = 0
+        if validation_data:
+            best_accuracy = self.evaluate(validation_data)
+            print(f"Epoch 0: {best_accuracy}")
         for epoch in range(epochs):
             _random.shuffle(training_data)
             for i in range(0, len(training_data), mini_batch_size):
@@ -110,7 +113,10 @@ class Network:
     def load_file(cls, filepath: str):
         with open(filepath) as f:
             data = json.load(f)
-        out = cls(data["weights"], data["biases"])
+        out = cls(
+            [Matrix(w) for w in data["weights"]],
+            [Matrix.from_vector(b) for b in data["biases"]]
+        )
         assert out._layer_sizes == data["layer_sizes"], "Invalid layer sizes"
         return out
 
